@@ -60,6 +60,7 @@ flutter:
     - assets/dice3.png
     - assets/dice6.png
     - assets/background.png
+    - assets/default.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
