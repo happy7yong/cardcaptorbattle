@@ -53,13 +53,25 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-    - assets/dice1.png
-    - assets/dice2.png
-    - assets/dice4.png
-    - assets/dice5.png
-    - assets/dice3.png
-    - assets/dice6.png
+    - assets/card/card1.png
+    - assets/card/card2.png
+    - assets/card/card3.png
+    - assets/card/card4.png
+    - assets/card/card5.png
+    - assets/card/card6.png
+    - assets/card/card7.png
+    - assets/card/card8.png
+    - assets/card/card9.png
+    - assets/card/card10.png
+    - assets/card/card11.png
+    - assets/card/card12.png
+    - assets/card/card13.png
+    - assets/card/card14.png
+    - assets/card/card15.png
+    - assets/card/card16.png
     - assets/background.png
+    - assets/reset.png
+    - assets/card/default.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
