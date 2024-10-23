@@ -10,9 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Scaffold(
-        body: const CardbattlePageStateful(),
+        body: CardbattlePageStateful(),
       ),
     );
   }
@@ -26,19 +26,19 @@ class CardbattlePageStateful extends StatefulWidget {
 }
 
 class _CardbattleStatefulState extends State<CardbattlePageStateful> {
-  int leftDiceNumber = 0; // 초기값 0으로 설정
-  int rightDiceNumber = 0; // 초기값 0으로 설정
-  bool isFirstClickDefense = true; // 첫번째 클릭은 방어력 적용
-  bool showStats = false; // 수치를 보여줄지 결정하는 변수
+  int leftCardIndex = 0;
+  int rightCardIndex = 0;
+  bool isFirstClickDefense = true;
+  bool showStats = false;
 
   String? leftStatType;
   String? rightStatType;
-  String? winner; // 승리 카드 구분
+  String? winner;
 
-  int? leftStatValue; // 왼쪽 카드의 공격력 또는 방어력
-  int? rightStatValue; // 오른쪽 카드의 공격력 또는 방어력
+  int? leftStatValue;
+  int? rightStatValue;
 
-  final List<Map<String, int>> diceStats = [
+  final List<Map<String, int>> cardStats = [
     {'attack': 9, 'defense': 5},
     {'attack': 8, 'defense': 4},
     {'attack': 8, 'defense': 3},
@@ -60,52 +60,48 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
   void applyStatsToCard(String card) {
     setState(() {
       if (card == 'left') {
-        leftDiceNumber = Random().nextInt(16) + 1;
+        leftCardIndex = Random().nextInt(16) + 1;
         leftStatType = isFirstClickDefense ? 'Defense' : 'Attack';
         leftStatValue = isFirstClickDefense
-            ? diceStats[leftDiceNumber - 1]['defense']
-            : diceStats[leftDiceNumber - 1]['attack'];
+            ? cardStats[leftCardIndex - 1]['defense']
+            : cardStats[leftCardIndex - 1]['attack'];
       } else if (card == 'right') {
-        rightDiceNumber = Random().nextInt(16) + 1;
+        rightCardIndex = Random().nextInt(16) + 1;
         rightStatType = isFirstClickDefense ? 'Defense' : 'Attack';
         rightStatValue = isFirstClickDefense
-            ? diceStats[rightDiceNumber - 1]['defense']
-            : diceStats[rightDiceNumber - 1]['attack'];
+            ? cardStats[rightCardIndex - 1]['defense']
+            : cardStats[rightCardIndex - 1]['attack'];
       }
 
       showStats = true;
       isFirstClickDefense = !isFirstClickDefense;
 
-      // 두 카드가 모두 선택된 경우에만 승패를 판단
-      if (leftDiceNumber != 0 && rightDiceNumber != 0) {
+      if (leftCardIndex != 0 && rightCardIndex != 0) {
         determineWinner();
       }
     });
   }
 
   void determineWinner() {
-    // 조커 카드인 경우 무승부 처리
-    if ((leftDiceNumber == 1 || leftDiceNumber == 9) &&
-        (rightDiceNumber == 1 || rightDiceNumber == 9)) {
+    if ((leftCardIndex == 1 || leftCardIndex == 9) &&
+        (rightCardIndex == 1 || rightCardIndex == 9)) {
       winner = 'draw';
       return;
     }
 
-    if (leftDiceNumber == 1 || leftDiceNumber == 9) {
-      // 왼쪽 카드가 조커인 경우
+    if (leftCardIndex == 1 || leftCardIndex == 9) {
       winner = 'left';
       return;
     }
 
-    if (rightDiceNumber == 1 || rightDiceNumber == 9) {
-      // 오른쪽 카드가 조커인 경우
+    if (rightCardIndex == 1 || rightCardIndex == 9) {
       winner = 'right';
       return;
     }
 
     if (leftStatType == 'Defense' && rightStatType == 'Attack') {
-      int leftDefense = diceStats[leftDiceNumber - 1]['defense']!;
-      int rightAttack = diceStats[rightDiceNumber - 1]['attack']!;
+      int leftDefense = cardStats[leftCardIndex - 1]['defense']!;
+      int rightAttack = cardStats[rightCardIndex - 1]['attack']!;
       if (leftDefense > rightAttack) {
         winner = 'left';
       } else if (rightAttack > leftDefense) {
@@ -114,8 +110,8 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
         winner = 'draw';
       }
     } else if (leftStatType == 'Attack' && rightStatType == 'Defense') {
-      int leftAttack = diceStats[leftDiceNumber - 1]['attack']!;
-      int rightDefense = diceStats[rightDiceNumber - 1]['defense']!;
+      int leftAttack = cardStats[leftCardIndex - 1]['attack']!;
+      int rightDefense = cardStats[rightCardIndex - 1]['defense']!;
       if (leftAttack > rightDefense) {
         winner = 'left';
       } else if (rightDefense > leftAttack) {
@@ -126,17 +122,17 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
     }
   }
 
-  void resetDice() {
+  void resetCards() {
     setState(() {
-      leftDiceNumber = 0;
-      rightDiceNumber = 0;
+      leftCardIndex = 0;
+      rightCardIndex = 0;
       leftStatType = null;
       rightStatType = null;
       leftStatValue = null;
       rightStatValue = null;
       showStats = false;
       isFirstClickDefense = true;
-      winner = null; // 승리 정보 초기화
+      winner = null;
     });
   }
 
@@ -184,7 +180,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                   decoration: BoxDecoration(
                                     boxShadow: winner == 'left'
                                         ? [
-                                            BoxShadow(
+                                            const BoxShadow(
                                               color: Colors.white,
                                               blurRadius: 15.0,
                                             ),
@@ -192,12 +188,12 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                         : [],
                                   ),
                                   child: Image.asset(
-                                    leftDiceNumber == 0
+                                    leftCardIndex == 0
                                         ? 'assets/card/default.png'
-                                        : 'assets/card/card$leftDiceNumber.png',
+                                        : 'assets/card/card$leftCardIndex.png',
                                     color: winner == 'right'
                                         ? Colors.grey.withOpacity(0.7)
-                                        : null, // 진 카드의 명도를 낮춤
+                                        : null,
                                     colorBlendMode: BlendMode.modulate,
                                   ),
                                 ),
@@ -259,7 +255,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                   decoration: BoxDecoration(
                                     boxShadow: winner == 'right'
                                         ? [
-                                            BoxShadow(
+                                            const BoxShadow(
                                               color: Colors.white,
                                               blurRadius: 15.0,
                                             ),
@@ -267,12 +263,12 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                         : [],
                                   ),
                                   child: Image.asset(
-                                    rightDiceNumber == 0
+                                    rightCardIndex == 0
                                         ? 'assets/card/default.png'
-                                        : 'assets/card/card$rightDiceNumber.png',
+                                        : 'assets/card/card$rightCardIndex.png',
                                     color: winner == 'left'
                                         ? Colors.grey.withOpacity(0.7)
-                                        : null, // 진 카드의 명도를 낮춤
+                                        : null,
                                     colorBlendMode: BlendMode.modulate,
                                   ),
                                 ),
@@ -324,18 +320,17 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // 주사위 초기화 버튼
+                // 카드 초기화 버튼
                 ElevatedButton(
-                  onPressed: resetDice,
+                  onPressed: resetCards,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.blue.withOpacity(0.4), // 배경색을 반투명으로 설정
-                    padding: EdgeInsets.zero, // 패딩을 0으로 설정하여 이미지 크기에 맞추기
+                    backgroundColor: Colors.blue.withOpacity(0.4),
+                    padding: EdgeInsets.zero,
                   ),
                   child: Image.asset(
-                    'assets/reset.png', // 이미지 파일 경로
-                    width: 24, // 이미지 너비 (필요에 따라 조정)
-                    height: 24, // 이미지 높이 (필요에 따라 조정)
+                    'assets/reset.png',
+                    width: 24,
+                    height: 24,
                   ),
                 ),
               ],
