@@ -10,35 +10,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Scaffold(
-        body: const CardbattlePageStateful(),
+        body: CardBattlePageStateful(),
       ),
     );
   }
 }
 
-class CardbattlePageStateful extends StatefulWidget {
-  const CardbattlePageStateful({super.key});
+class CardBattlePageStateful extends StatefulWidget {
+  const CardBattlePageStateful({super.key});
 
   @override
-  _CardbattleStatefulState createState() => _CardbattleStatefulState();
+  _CardBattleStatefulState createState() => _CardBattleStatefulState();
 }
 
-class _CardbattleStatefulState extends State<CardbattlePageStateful> {
-  int leftDiceNumber = 0; // 초기값 0으로 설정
-  int rightDiceNumber = 0; // 초기값 0으로 설정
-  bool isFirstClickDefense = true; // 첫번째 클릭은 방어력 적용
-  bool showStats = false; // 수치를 보여줄지 결정하는 변수
+class _CardBattleStatefulState extends State<CardBattlePageStateful> {
+  int leftCardNumber = 0;
+  int rightCardNumber = 0;
+  bool isFirstClickForDefense = true;
+  bool isStatsVisible = false;
 
-  String? leftStatType;
-  String? rightStatType;
-  String? winner; // 승리 카드 구분
+  String? leftCardStatType;
+  String? rightCardStatType;
+  String? winner;
 
-  int? leftStatValue; // 왼쪽 카드의 공격력 또는 방어력
-  int? rightStatValue; // 오른쪽 카드의 공격력 또는 방어력
+  int? leftStatValue;
+  int? rightStatValue;
 
-  final List<Map<String, int>> diceStats = [
+  final List<Map<String, int>> cardStats = [
     {'attack': 9, 'defense': 5},
     {'attack': 8, 'defense': 4},
     {'attack': 8, 'defense': 3},
@@ -57,55 +57,53 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
     {'attack': 4, 'defense': 6},
   ];
 
-  void applyStatsToCard(String card) {
+  void applyStatsTo(String card) {
     setState(() {
       if (card == 'left') {
-        leftDiceNumber = Random().nextInt(16) + 1;
-        leftStatType = isFirstClickDefense ? 'Defense' : 'Attack';
-        leftStatValue = isFirstClickDefense
-            ? diceStats[leftDiceNumber - 1]['defense']
-            : diceStats[leftDiceNumber - 1]['attack'];
+        leftCardNumber = Random().nextInt(16) + 1;
+        leftCardStatType = isFirstClickForDefense ? 'Defense' : 'Attack';
+        leftStatValue = isFirstClickForDefense
+            ? cardStats[leftCardNumber - 1]['defense']
+            : cardStats[leftCardNumber - 1]['attack'];
       } else if (card == 'right') {
-        rightDiceNumber = Random().nextInt(16) + 1;
-        rightStatType = isFirstClickDefense ? 'Defense' : 'Attack';
-        rightStatValue = isFirstClickDefense
-            ? diceStats[rightDiceNumber - 1]['defense']
-            : diceStats[rightDiceNumber - 1]['attack'];
+        rightCardNumber = Random().nextInt(16) + 1;
+        rightCardStatType = isFirstClickForDefense ? 'Defense' : 'Attack';
+        rightStatValue = isFirstClickForDefense
+            ? cardStats[rightCardNumber - 1]['defense']
+            : cardStats[rightCardNumber - 1]['attack'];
       }
 
-      showStats = true;
-      isFirstClickDefense = !isFirstClickDefense;
+      isStatsVisible = true;
+      isFirstClickForDefense = !isFirstClickForDefense;
 
-      // 두 카드가 모두 선택된 경우에만 승패를 판단
-      if (leftDiceNumber != 0 && rightDiceNumber != 0) {
+      // 양쪽 카드가 선택되었을 때 승자를 결정
+      if (leftCardNumber != 0 && rightCardNumber != 0) {
         determineWinner();
       }
     });
   }
 
   void determineWinner() {
-    // 조커 카드인 경우 무승부 처리
-    if ((leftDiceNumber == 1 || leftDiceNumber == 9) &&
-        (rightDiceNumber == 1 || rightDiceNumber == 9)) {
+    // 양쪽 조커 카드를 무승부 처리
+    if ((leftCardNumber == 1 || leftCardNumber == 9) &&
+        (rightCardNumber == 1 || rightCardNumber == 9)) {
       winner = 'draw';
       return;
     }
 
-    if (leftDiceNumber == 1 || leftDiceNumber == 9) {
-      // 왼쪽 카드가 조커인 경우
+    if (leftCardNumber == 1 || leftCardNumber == 9) {
       winner = 'left';
       return;
     }
 
-    if (rightDiceNumber == 1 || rightDiceNumber == 9) {
-      // 오른쪽 카드가 조커인 경우
+    if (rightCardNumber == 1 || rightCardNumber == 9) {
       winner = 'right';
       return;
     }
 
-    if (leftStatType == 'Defense' && rightStatType == 'Attack') {
-      int leftDefense = diceStats[leftDiceNumber - 1]['defense']!;
-      int rightAttack = diceStats[rightDiceNumber - 1]['attack']!;
+    if (leftCardStatType == 'Defense' && rightCardStatType == 'Attack') {
+      int leftDefense = cardStats[leftCardNumber - 1]['defense']!;
+      int rightAttack = cardStats[rightCardNumber - 1]['attack']!;
       if (leftDefense > rightAttack) {
         winner = 'left';
       } else if (rightAttack > leftDefense) {
@@ -113,9 +111,9 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
       } else {
         winner = 'draw';
       }
-    } else if (leftStatType == 'Attack' && rightStatType == 'Defense') {
-      int leftAttack = diceStats[leftDiceNumber - 1]['attack']!;
-      int rightDefense = diceStats[rightDiceNumber - 1]['defense']!;
+    } else if (leftCardStatType == 'Attack' && rightCardStatType == 'Defense') {
+      int leftAttack = cardStats[leftCardNumber - 1]['attack']!;
+      int rightDefense = cardStats[rightCardNumber - 1]['defense']!;
       if (leftAttack > rightDefense) {
         winner = 'left';
       } else if (rightDefense > leftAttack) {
@@ -128,15 +126,15 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
 
   void resetDice() {
     setState(() {
-      leftDiceNumber = 0;
-      rightDiceNumber = 0;
-      leftStatType = null;
-      rightStatType = null;
+      leftCardNumber = 0;
+      rightCardNumber = 0;
+      leftCardStatType = null;
+      rightCardStatType = null;
       leftStatValue = null;
       rightStatValue = null;
-      showStats = false;
-      isFirstClickDefense = true;
-      winner = null; // 승리 정보 초기화
+      isStatsVisible = false;
+      isFirstClickForDefense = true;
+      winner = null;
     });
   }
 
@@ -171,12 +169,11 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    // 왼쪽 카드
                     Expanded(
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () => applyStatsToCard('left'),
+                            onTap: () => applyStatsTo('left'),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -184,7 +181,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                   decoration: BoxDecoration(
                                     boxShadow: winner == 'left'
                                         ? [
-                                            BoxShadow(
+                                            const BoxShadow(
                                               color: Colors.white,
                                               blurRadius: 15.0,
                                             ),
@@ -192,16 +189,16 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                         : [],
                                   ),
                                   child: Image.asset(
-                                    leftDiceNumber == 0
+                                    leftCardNumber == 0
                                         ? 'assets/card/default.png'
-                                        : 'assets/card/card$leftDiceNumber.png',
+                                        : 'assets/card/card$leftCardNumber.png',
                                     color: winner == 'right'
                                         ? Colors.grey.withOpacity(0.7)
-                                        : null, // 진 카드의 명도를 낮춤
+                                        : null,
                                     colorBlendMode: BlendMode.modulate,
                                   ),
                                 ),
-                                if (winner == 'left') // 승리 텍스트 표시
+                                if (winner == 'left')
                                   const Text(
                                     'Win',
                                     style: TextStyle(
@@ -217,7 +214,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                       ],
                                     ),
                                   ),
-                                if (winner == 'right') // 패배 텍스트 표시
+                                if (winner == 'right')
                                   const Text(
                                     'Lose',
                                     style: TextStyle(
@@ -237,21 +234,20 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          if (showStats)
+                          if (isStatsVisible)
                             Text(
-                              '$leftStatType: $leftStatValue',
+                              '$leftCardStatType: $leftStatValue',
                               style: const TextStyle(
                                   fontSize: 18, color: Colors.white),
                             ),
                         ],
                       ),
                     ),
-                    // 오른쪽 카드
                     Expanded(
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () => applyStatsToCard('right'),
+                            onTap: () => applyStatsTo('right'),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -259,7 +255,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                   decoration: BoxDecoration(
                                     boxShadow: winner == 'right'
                                         ? [
-                                            BoxShadow(
+                                            const BoxShadow(
                                               color: Colors.white,
                                               blurRadius: 15.0,
                                             ),
@@ -267,16 +263,16 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                         : [],
                                   ),
                                   child: Image.asset(
-                                    rightDiceNumber == 0
+                                    rightCardNumber == 0
                                         ? 'assets/card/default.png'
-                                        : 'assets/card/card$rightDiceNumber.png',
+                                        : 'assets/card/card$rightCardNumber.png',
                                     color: winner == 'left'
                                         ? Colors.grey.withOpacity(0.7)
-                                        : null, // 진 카드의 명도를 낮춤
+                                        : null,
                                     colorBlendMode: BlendMode.modulate,
                                   ),
                                 ),
-                                if (winner == 'right') // 승리 텍스트 표시
+                                if (winner == 'right')
                                   const Text(
                                     'Win',
                                     style: TextStyle(
@@ -292,7 +288,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                       ],
                                     ),
                                   ),
-                                if (winner == 'left') // 패배 텍스트 표시
+                                if (winner == 'left')
                                   const Text(
                                     'Lose',
                                     style: TextStyle(
@@ -312,9 +308,9 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          if (showStats)
+                          if (isStatsVisible)
                             Text(
-                              '$rightStatType: $rightStatValue',
+                              '$rightCardStatType: $rightStatValue',
                               style: const TextStyle(
                                   fontSize: 18, color: Colors.white),
                             ),
@@ -324,19 +320,9 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // 주사위 초기화 버튼
                 ElevatedButton(
                   onPressed: resetDice,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.blue.withOpacity(0.4), // 배경색을 반투명으로 설정
-                    padding: EdgeInsets.zero, // 패딩을 0으로 설정하여 이미지 크기에 맞추기
-                  ),
-                  child: Image.asset(
-                    'assets/reset.png', // 이미지 파일 경로
-                    width: 24, // 이미지 너비 (필요에 따라 조정)
-                    height: 24, // 이미지 높이 (필요에 따라 조정)
-                  ),
+                  child: const Text('Reset'),
                 ),
               ],
             ),
