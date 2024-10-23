@@ -18,12 +18,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class CardbattlePageStateful extends StatefulWidget {
-  const CardbattlePageStateful({super.key});
+class CardBattlePageStateful extends StatefulWidget {
+  const CardBattlePageStateful({super.key});
 
   @override
-  _CardbattleStatefulState createState() => _CardbattleStatefulState();
+  _CardBattleStatefulState createState() => _CardBattleStatefulState();
 }
+
 
 class _CardbattleStatefulState extends State<CardbattlePageStateful> {
   int leftCardIndex = 0;
@@ -33,6 +34,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
 
   String? leftStatType;
   String? rightStatType;
+
   String? winner;
 
   int? leftStatValue;
@@ -57,7 +59,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
     {'attack': 4, 'defense': 6},
   ];
 
-  void applyStatsToCard(String card) {
+  void applyStatsTo(String card) {
     setState(() {
       if (card == 'left') {
         leftCardIndex = Random().nextInt(16) + 1;
@@ -73,8 +75,8 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
             : cardStats[rightCardIndex - 1]['attack'];
       }
 
-      showStats = true;
-      isFirstClickDefense = !isFirstClickDefense;
+      isStatsVisible = true;
+      isFirstClickForDefense = !isFirstClickForDefense;
 
       if (leftCardIndex != 0 && rightCardIndex != 0) {
         determineWinner();
@@ -85,23 +87,28 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
   void determineWinner() {
     if ((leftCardIndex == 1 || leftCardIndex == 9) &&
         (rightCardIndex == 1 || rightCardIndex == 9)) {
+
       winner = 'draw';
       return;
     }
+
 
     if (leftCardIndex == 1 || leftCardIndex == 9) {
       winner = 'left';
       return;
     }
 
+
     if (rightCardIndex == 1 || rightCardIndex == 9) {
       winner = 'right';
       return;
     }
 
+
     if (leftStatType == 'Defense' && rightStatType == 'Attack') {
       int leftDefense = cardStats[leftCardIndex - 1]['defense']!;
       int rightAttack = cardStats[rightCardIndex - 1]['attack']!;
+
       if (leftDefense > rightAttack) {
         winner = 'left';
       } else if (rightAttack > leftDefense) {
@@ -109,9 +116,11 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
       } else {
         winner = 'draw';
       }
+
     } else if (leftStatType == 'Attack' && rightStatType == 'Defense') {
       int leftAttack = cardStats[leftCardIndex - 1]['attack']!;
       int rightDefense = cardStats[rightCardIndex - 1]['defense']!;
+
       if (leftAttack > rightDefense) {
         winner = 'left';
       } else if (rightDefense > leftAttack) {
@@ -124,6 +133,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
 
   void resetCards() {
     setState(() {
+
       leftCardIndex = 0;
       rightCardIndex = 0;
       leftStatType = null;
@@ -132,6 +142,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
       rightStatValue = null;
       showStats = false;
       isFirstClickDefense = true;
+
       winner = null;
     });
   }
@@ -167,12 +178,11 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    // 왼쪽 카드
                     Expanded(
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () => applyStatsToCard('left'),
+                            onTap: () => applyStatsTo('left'),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -188,16 +198,18 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                         : [],
                                   ),
                                   child: Image.asset(
+
                                     leftCardIndex == 0
                                         ? 'assets/card/default.png'
                                         : 'assets/card/card$leftCardIndex.png',
+
                                     color: winner == 'right'
                                         ? Colors.grey.withOpacity(0.7)
                                         : null,
                                     colorBlendMode: BlendMode.modulate,
                                   ),
                                 ),
-                                if (winner == 'left') // 승리 텍스트 표시
+                                if (winner == 'left')
                                   const Text(
                                     'Win',
                                     style: TextStyle(
@@ -213,7 +225,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                       ],
                                     ),
                                   ),
-                                if (winner == 'right') // 패배 텍스트 표시
+                                if (winner == 'right')
                                   const Text(
                                     'Lose',
                                     style: TextStyle(
@@ -233,21 +245,20 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          if (showStats)
+                          if (isStatsVisible)
                             Text(
-                              '$leftStatType: $leftStatValue',
+                              '$leftCardStatType: $leftStatValue',
                               style: const TextStyle(
                                   fontSize: 18, color: Colors.white),
                             ),
                         ],
                       ),
                     ),
-                    // 오른쪽 카드
                     Expanded(
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: () => applyStatsToCard('right'),
+                            onTap: () => applyStatsTo('right'),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -263,16 +274,18 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                         : [],
                                   ),
                                   child: Image.asset(
+
                                     rightCardIndex == 0
                                         ? 'assets/card/default.png'
                                         : 'assets/card/card$rightCardIndex.png',
+
                                     color: winner == 'left'
                                         ? Colors.grey.withOpacity(0.7)
                                         : null,
                                     colorBlendMode: BlendMode.modulate,
                                   ),
                                 ),
-                                if (winner == 'right') // 승리 텍스트 표시
+                                if (winner == 'right')
                                   const Text(
                                     'Win',
                                     style: TextStyle(
@@ -288,7 +301,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                                       ],
                                     ),
                                   ),
-                                if (winner == 'left') // 패배 텍스트 표시
+                                if (winner == 'left')
                                   const Text(
                                     'Lose',
                                     style: TextStyle(
@@ -308,9 +321,9 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          if (showStats)
+                          if (isStatsVisible)
                             Text(
-                              '$rightStatType: $rightStatValue',
+                              '$rightCardStatType: $rightStatValue',
                               style: const TextStyle(
                                   fontSize: 18, color: Colors.white),
                             ),
@@ -320,6 +333,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                   ],
                 ),
                 const SizedBox(height: 20),
+
                 // 카드 초기화 버튼
                 ElevatedButton(
                   onPressed: resetCards,
@@ -332,6 +346,7 @@ class _CardbattleStatefulState extends State<CardbattlePageStateful> {
                     width: 24,
                     height: 24,
                   ),
+
                 ),
               ],
             ),
